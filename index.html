@@ -145,10 +145,11 @@
 
     .hero-sub {
       margin-top: 32px;
-      max-width: 480px;
+      max-width: 640px;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.8;
+      white-space: nowrap;
       opacity: 0;
       animation: fadeUp 0.8s 0.6s forwards;
     }
@@ -326,6 +327,21 @@
       overflow: hidden;
     }
 
+    .app-item-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
     .app-item::after {
       content: '';
       position: absolute;
@@ -459,13 +475,12 @@
   </nav>
 
   <section class="hero">
-    <div class="hero-bg-text">NPL</div>
     <p class="hero-tag">// Apps & Tools Studio</p>
     <h1 class="hero-title">
       Neo<span>Prim</span><em>Labs</em>
     </h1>
     <p class="hero-sub">
-      We build apps and tools that move fast, feel right, and actually work. No bloat. No fluff. Just sharp software with a soul.
+      Building systems. Shaped by instinct. Powered by intelligence.
     </p>
     <div class="hero-cta">
       <a href="#apps" class="btn btn-primary">See Our Work</a>
@@ -505,29 +520,28 @@
 
   <section id="apps">
     <p class="section-label">// Our Apps</p>
-    <h2 class="section-title">What We've<br>Shipped.</h2>
     <div class="apps-list">
-      <div class="app-item">
-        <span class="app-name">Coming Soon</span>
+
+      <a href="https://play.google.com/store/apps/details?id=com.neoprimlabs.shipsomething" target="_blank" rel="noopener" class="app-item">
+        <div class="app-item-left">
+          <img src="ship-something-icon.png" alt="Ship Something icon" class="app-icon"/>
+          <span class="app-name">Ship Something</span>
+        </div>
         <div class="app-meta">
-          <span class="app-tag">App</span>
+          <span class="app-tag">Android</span>
           <span class="app-arrow">→</span>
         </div>
-      </div>
-      <div class="app-item">
-        <span class="app-name">In Development</span>
+      </a>
+
+      <div class="app-item" style="cursor: default;">
+        <div class="app-item-left">
+          <span class="app-name">More Coming Soon</span>
+        </div>
         <div class="app-meta">
-          <span class="app-tag">Tool</span>
-          <span class="app-arrow">→</span>
+          <span class="app-tag">In Development</span>
         </div>
       </div>
-      <div class="app-item">
-        <span class="app-name">More Dropping Soon</span>
-        <div class="app-meta">
-          <span class="app-tag">TBA</span>
-          <span class="app-arrow">→</span>
-        </div>
-      </div>
+
     </div>
   </section>
 
@@ -537,7 +551,7 @@
     <p class="section-label">// Get In Touch</p>
     <h2 class="section-title">Let's Build<br>Something.</h2>
     <div class="contact-inner">
-      <a href="mailto:hello@neoprimlabs.com" class="contact-email">hello@neoprimlabs.com</a>
+      <a href="mailto:neoprimlabs@gmail.com" class="contact-email">neoprimlabs@gmail.com</a>
       <p class="contact-note">
         Have an idea? A problem that needs a tool? Or just want to see what we're working on next — reach out. We respond fast.
       </p>
@@ -548,7 +562,7 @@
     <div class="footer-logo">NPL</div>
     <ul class="footer-links">
       <li><a href="privacy.html">Privacy Policies</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="mailto:neoprimlabs@gmail.com">Contact</a></li>
     </ul>
     <span class="footer-copy">&copy; 2026 NeoPrimLabs</span>
   </footer>
