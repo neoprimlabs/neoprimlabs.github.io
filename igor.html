@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I.G.O.R. — NeoPrimLabs</title>
+  <meta name="description" content="I.G.O.R. is a self-hosted autonomous AI assistant built on Claude and deployed on Oracle Cloud — an always-on personal robotic operator."/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1f1f1f;
+      --accent: #6db33f;
+      --accent2: #4a8f2a;
+      --text: #e8e4dc;
+      --muted: #666;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.9;
+      cursor: crosshair;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-back {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--accent); }
+
+    .page-header {
+      padding: 160px 40px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .page-header-left { flex: 1; }
+
+    .page-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(64px, 10vw, 130px);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      line-height: 0.9;
+    }
+
+    .page-title span { color: var(--accent); }
+
+    .page-subtitle {
+      margin-top: 16px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .page-tagline {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    .app-icon-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .page-meta {
+      padding: 32px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .page-body {
+      max-width: 800px;
+      padding: 80px 40px;
+    }
+
+    .project-section {
+      margin-bottom: 64px;
+    }
+
+    .project-section h2 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+
+    .project-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .project-section ul li {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0 8px 24px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section ul li:first-child { border-top: 1px solid var(--border); }
+
+    .project-section ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .stack-item {
+      background: var(--bg);
+      padding: 24px;
+      transition: background 0.2s;
+    }
+
+    .stack-item:hover { background: var(--surface); }
+
+    .stack-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .stack-role {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .highlight-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 28px 32px;
+      margin-top: 24px;
+    }
+
+    .highlight-block p {
+      margin-bottom: 0;
+    }
+
+    footer {
+      padding: 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .page-header { flex-direction: column; align-items: flex-start; padding: 120px 20px 60px; }
+      .page-meta { padding: 24px 20px; gap: 28px; }
+      .page-body { padding: 60px 20px; }
+      footer { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">NeoPrimLabs</a>
+    <a href="index.html#apps" class="nav-back">← Projects</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <p class="page-label">// Actively Deployed</p>
+      <h1 class="page-title"><span>I.G.O.R.</span></h1>
+      <p class="page-subtitle">Interactive Guidance and Operational Recognition</p>
+      <p class="page-tagline">A self-hosted autonomous AI assistant — an always-on personal robotic operator capable of executing complex, multi-step tasks without human intervention at each step.</p>
+    </div>
+    <img src="IGOR.png" alt="I.G.O.R. icon" class="app-icon-large"/>
+  </div>
+
+  <div class="page-meta">
+    <div class="meta-item">
+      <p class="meta-label">Status</p>
+      <p class="meta-value">Actively Deployed</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Type</p>
+      <p class="meta-value">Autonomous AI System</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Infrastructure</p>
+      <p class="meta-value">Oracle Cloud</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Interface</p>
+      <p class="meta-value">Self-Hosted / Private</p>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="project-section">
+      <h2>What It Is</h2>
+      <p>
+        I.G.O.R. is a personal robotic operator — a self-hosted AI system built on Anthropic's Claude API and running on Oracle Cloud infrastructure. It operates continuously, handling research, scheduling, monitoring, memory management, and development tasks through a simple conversational interface.
+      </p>
+      <p>
+        Unlike a standard chatbot, I.G.O.R. doesn't wait for a human to confirm each step. It plans, acts, evaluates results, and iterates toward a goal on its own.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>Architecture</h2>
+      <p>
+        The system runs on a ReAct (Reason-Act-Observe) loop with extended thinking enabled. At each iteration, I.G.O.R. reasons about the current state, selects and executes a tool, observes the result, and decides the next move — repeating until the goal is reached.
+      </p>
+      <div class="highlight-block">
+        <p>Extended thinking gives I.G.O.R. the ability to work through ambiguous, multi-constraint problems before committing to an action — producing more deliberate decisions rather than reactive ones.</p>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Capabilities</h2>
+      <ul>
+        <li>Web search and live URL fetching for real-time information gathering</li>
+        <li>Python execution for computation, data processing, and scripting</li>
+        <li>Shell access for system-level operations and process control</li>
+        <li>File read/write for persistent output and document generation</li>
+        <li>Persistent memory across sessions for long-running context</li>
+        <li>Deep research mode — runs indefinitely on a question, accumulating findings and identifying unexplored threads</li>
+        <li>Self-modification — reads its own source, writes improvements, validates changes, and signals for redeployment</li>
+      </ul>
+    </div>
+
+    <div class="project-section">
+      <h2>Deep Research Mode</h2>
+      <p>
+        Based on the autoresearch pattern, I.G.O.R.'s deep research mode runs without a fixed endpoint. Given a question or topic, it accumulates findings across iterations, identifies gaps in its own knowledge, pursues unexplored threads, and builds a comprehensive report — all without human guidance between cycles.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>Self-Modification</h2>
+      <p>
+        I.G.O.R. can read its own source code, propose and write improvements, validate the changes, and signal for redeployment. This is a foundational step toward a fully autonomous self-improving operator — a system that gets better at its own job over time.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>Tech Stack</h2>
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-name">Anthropic</div>
+          <div class="stack-role">Claude API — Core Intelligence</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Oracle Cloud</div>
+          <div class="stack-role">Self-Hosted Infrastructure</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Python</div>
+          <div class="stack-role">Runtime + Tool Execution</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">ReAct</div>
+          <div class="stack-role">Agent Loop Architecture</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">NPL</div>
+    <span class="footer-copy">&copy; 2026 NeoPrimLabs</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ship Something — NeoPrimLabs</title>
+  <meta name="description" content="Ship Something is an Android app that generates 10 tailored project ideas for developers who have the skills to build but struggle to decide what to build next."/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1f1f1f;
+      --accent: #6db33f;
+      --accent2: #4a8f2a;
+      --text: #e8e4dc;
+      --muted: #666;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.9;
+      cursor: crosshair;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-back {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--accent); }
+
+    .page-header {
+      padding: 160px 40px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .page-header-left { flex: 1; }
+
+    .page-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 9vw, 120px);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      line-height: 0.9;
+    }
+
+    .page-title span { color: var(--accent); }
+
+    .page-tagline {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    .app-icon-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .page-meta {
+      padding: 32px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .page-body {
+      max-width: 800px;
+      padding: 80px 40px;
+    }
+
+    .project-section {
+      margin-bottom: 64px;
+    }
+
+    .project-section h2 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+
+    .project-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .project-section ul li {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0 8px 24px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section ul li:first-child { border-top: 1px solid var(--border); }
+
+    .project-section ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+    }
+
+    .highlight-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 28px 32px;
+      margin-top: 24px;
+    }
+
+    .highlight-block p { margin-bottom: 0; }
+
+    .idea-anatomy {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .anatomy-item {
+      background: var(--bg);
+      padding: 20px 24px;
+      transition: background 0.2s;
+    }
+
+    .anatomy-item:hover { background: var(--surface); }
+
+    .anatomy-name {
+      font-family: var(--font-display);
+      font-size: 16px;
+      letter-spacing: 1px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .anatomy-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .stack-item {
+      background: var(--bg);
+      padding: 24px;
+      transition: background 0.2s;
+    }
+
+    .stack-item:hover { background: var(--surface); }
+
+    .stack-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .stack-role {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .credit-row {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .credit-tier {
+      flex: 1;
+      background: var(--bg);
+      padding: 24px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .credit-tier:hover { background: var(--surface); }
+
+    .credit-amount {
+      font-family: var(--font-display);
+      font-size: 40px;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .credit-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .platform-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .platform-badge.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .platform-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .platform-badge.active .platform-dot { background: var(--accent); }
+
+    footer {
+      padding: 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .page-header { flex-direction: column; align-items: flex-start; padding: 120px 20px 60px; }
+      .page-meta { padding: 24px 20px; gap: 28px; }
+      .page-body { padding: 60px 20px; }
+      footer { padding: 32px 20px; }
+      .credit-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">NeoPrimLabs</a>
+    <a href="index.html#apps" class="nav-back">← Projects</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <p class="page-label">// Current Project</p>
+      <h1 class="page-title">Ship<br><span>Something</span></h1>
+      <p class="page-tagline">An Android app for developers who have the skills to build but get stuck on the hardest question: what should I build next?</p>
+    </div>
+    <img src="ShipSomethingLogoDark.png" alt="Ship Something icon" class="app-icon-large"/>
+  </div>
+
+  <div class="page-meta">
+    <div class="meta-item">
+      <p class="meta-label">Status</p>
+      <p class="meta-value">Live — Android</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Type</p>
+      <p class="meta-value">Freemium Mobile App</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Category</p>
+      <p class="meta-value">AI / Developer Tools</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Developer</p>
+      <p class="meta-value">NeoPrimLabs</p>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="project-section">
+      <h2>The Problem</h2>
+      <p>
+        Most project idea generators throw the same recycled suggestions at everyone — build a to-do app, build a weather app. They don't know anything about you, so they can't generate anything that's actually relevant to you.
+      </p>
+      <p>
+        Ship Something takes a different approach. Before generating anything, it asks you about yourself: your experience level, preferred tech stack, whether you're building solo or with a team, what domains genuinely interest you, how much time you realistically have, what's tripped you up on past projects, and how original you want to go — from proven low-risk concepts to genuinely novel ideas you'd have a hard time finding tutorials for.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>The Output</h2>
+      <p>
+        That input feeds into a custom prompt built on Claude, which returns 10 project ideas tailored specifically to your answers. The ideas aren't filler — they're written to be genuinely compelling starting points.
+      </p>
+      <p>Each idea includes:</p>
+      <div class="idea-anatomy">
+        <div class="anatomy-item">
+          <div class="anatomy-name">Title + Hook</div>
+          <div class="anatomy-desc">A name and one-line pitch</div>
+        </div>
+        <div class="anatomy-item">
+          <div class="anatomy-name">Description</div>
+          <div class="anatomy-desc">Full writeup of what you're building</div>
+        </div>
+        <div class="anatomy-item">
+          <div class="anatomy-name">Why Build It</div>
+          <div class="anatomy-desc">The case for why this idea is worth your time</div>
+        </div>
+        <div class="anatomy-item">
+          <div class="anatomy-name">Technical Systems</div>
+          <div class="anatomy-desc">The interesting engineering problems involved</div>
+        </div>
+        <div class="anatomy-item">
+          <div class="anatomy-name">Suggested Stack</div>
+          <div class="anatomy-desc">Recommended technologies to build with</div>
+        </div>
+        <div class="anatomy-item">
+          <div class="anatomy-name">Ratings + Scope</div>
+          <div class="anatomy-desc">Difficulty, novelty, time estimate, and what "done" looks like</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>What You Can Do With It</h2>
+      <ul>
+        <li>Save ideas to a dedicated list so they don't get lost between sessions — free for all users</li>
+        <li>Export any idea as formatted text — copy to clipboard or share directly — free for all users</li>
+        <li>Refine: give the AI follow-up instructions to tighten the scope, shift the tech, or change the difficulty — unlocked permanently with first purchase</li>
+      </ul>
+      <div class="highlight-block">
+        <p>Refine isn't a separate generation — it rewrites the existing idea based on your feedback, so you're iterating toward exactly what you want rather than rolling the dice again.</p>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Business Model</h2>
+      <p>
+        Freemium with server-side enforcement. Every account starts with 3 free generation credits — enough to experience the full core loop without paying. Additional credits are available in packs, and the first purchase permanently unlocks Refine across the account.
+      </p>
+      <div class="credit-row">
+        <div class="credit-tier">
+          <div class="credit-amount">3</div>
+          <div class="credit-label">Free on signup</div>
+        </div>
+        <div class="credit-tier">
+          <div class="credit-amount">10</div>
+          <div class="credit-label">Starter pack</div>
+        </div>
+        <div class="credit-tier">
+          <div class="credit-amount">30</div>
+          <div class="credit-label">Builder pack</div>
+        </div>
+        <div class="credit-tier">
+          <div class="credit-amount">100</div>
+          <div class="credit-label">Pro pack</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Tech Stack</h2>
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-name">Flutter</div>
+          <div class="stack-role">Frontend — Android</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Riverpod</div>
+          <div class="stack-role">State Management</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Supabase</div>
+          <div class="stack-role">Auth, DB, Edge Functions</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Anthropic</div>
+          <div class="stack-role">Claude API — Idea Generation</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-name">Google Play</div>
+          <div class="stack-role">Billing + Distribution</div>
+        </div>
+      </div>
+      <div class="highlight-block" style="margin-top: 20px;">
+        <p>AI generation runs as a Supabase edge function that validates the user's session, checks their credit balance, builds the prompt, calls the Claude API, and persists the results — all in a single server-side request. Credits and access are never enforced client-side.</p>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Platforms</h2>
+      <div class="platform-row">
+        <div class="platform-badge active">
+          <span class="platform-dot"></span>
+          Android — Live
+        </div>
+        <div class="platform-badge">
+          <span class="platform-dot"></span>
+          iOS — Planned
+        </div>
+        <div class="platform-badge">
+          <span class="platform-dot"></span>
+          Web — Planned
+        </div>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Privacy</h2>
+      <p>
+        Ship Something collects only what it needs: your Google account info for authentication, questionnaire responses to generate ideas, and purchase history for billing. No analytics, no ads, no location data. Full details in the <a href="privacy-app1.html" style="color: var(--accent); text-decoration: none;">privacy policy</a>.
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">NPL</div>
+    <span class="footer-copy">&copy; 2026 NeoPrimLabs</span>
+  </footer>
+
+</body>
+</html>

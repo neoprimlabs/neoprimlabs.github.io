@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I Heart Shelling — NeoPrimLabs</title>
+  <meta name="description" content="I Heart Shelling is a mobile app for beachcombers — log finds, identify species, earn badges, and connect with the shelling community."/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1f1f1f;
+      --accent: #6db33f;
+      --accent2: #4a8f2a;
+      --text: #e8e4dc;
+      --muted: #666;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.9;
+      cursor: crosshair;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-back {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--accent); }
+
+    .page-header {
+      padding: 160px 40px 80px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+    }
+
+    .page-header-left { flex: 1; }
+
+    .page-label {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 9vw, 120px);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      line-height: 0.9;
+    }
+
+    .page-title span { color: var(--accent); }
+
+    .page-tagline {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    .app-icon-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .page-meta {
+      padding: 32px 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .page-body {
+      max-width: 800px;
+      padding: 80px 40px;
+    }
+
+    .project-section {
+      margin-bottom: 64px;
+    }
+
+    .project-section h2 {
+      font-family: var(--font-display);
+      font-size: 32px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+      margin-bottom: 14px;
+    }
+
+    .project-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .project-section ul li {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0 8px 24px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-section ul li:first-child { border-top: 1px solid var(--border); }
+
+    .project-section ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+    }
+
+    .highlight-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 28px 32px;
+      margin-top: 24px;
+    }
+
+    .highlight-block p {
+      margin-bottom: 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .feature-item {
+      background: var(--bg);
+      padding: 24px;
+      transition: background 0.2s;
+    }
+
+    .feature-item:hover { background: var(--surface); }
+
+    .feature-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .feature-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .platform-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .platform-badge.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .platform-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .platform-badge.active .platform-dot { background: var(--accent); }
+
+    footer {
+      padding: 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .page-header { flex-direction: column; align-items: flex-start; padding: 120px 20px 60px; }
+      .page-meta { padding: 24px 20px; gap: 28px; }
+      .page-body { padding: 60px 20px; }
+      footer { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">NeoPrimLabs</a>
+    <a href="index.html#apps" class="nav-back">← Projects</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <p class="page-label">// In Development</p>
+      <h1 class="page-title">I Heart<br><span>Shelling</span></h1>
+      <p class="page-tagline">A mobile app built for beachcombers who want to do more than just collect — they want to connect. Log finds, identify species, and share discoveries with a community that lives for the shoreline.</p>
+    </div>
+    <img src="IHeartShelling.png" alt="I Heart Shelling icon" class="app-icon-large"/>
+  </div>
+
+  <div class="page-meta">
+    <div class="meta-item">
+      <p class="meta-label">Status</p>
+      <p class="meta-value">In Development</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Type</p>
+      <p class="meta-value">Mobile App</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Category</p>
+      <p class="meta-value">Outdoors / Community</p>
+    </div>
+    <div class="meta-item">
+      <p class="meta-label">Focus</p>
+      <p class="meta-value">Gulf Coast</p>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="project-section">
+      <h2>What It Does</h2>
+      <p>
+        I Heart Shelling lets you log every shell, shark tooth, piece of sea glass, and treasure you find right from the beach. GPS-tag your finds, snap a photo, and build a personal collection that grows with every tide.
+      </p>
+      <p>
+        As your collection grows, so does your profile. Earn XP, unlock badges for finding rare species and reaching milestones, and share your best finds to a public community feed — seeing what's washing up on beaches near you in real time.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>Species Encyclopedia</h2>
+      <p>
+        The built-in encyclopedia covers 100+ Gulf Coast species with descriptions, habitat notes, rarity ratings, and seasonal tips — so you always know what you're looking at, even without a signal.
+      </p>
+      <div class="highlight-block">
+        <p>Rarity ratings and seasonal data are baked into every entry, so the encyclopedia doubles as a field guide for planning when and where to go — not just identifying what you already found.</p>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Offline First</h2>
+      <p>
+        The app works fully offline. Finds are saved locally and sync to the cloud when you're back in range, so a spotty signal at the shoreline never gets in the way. The interactive map includes offline tile support, and the beach conditions dashboard — tides, weather, water temp, and NWS alerts — is built to work in low-connectivity environments too.
+      </p>
+    </div>
+
+    <div class="project-section">
+      <h2>Features</h2>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-name">Find Log</div>
+          <div class="feature-desc">GPS, photo, and species ID on every entry</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-name">Encyclopedia</div>
+          <div class="feature-desc">100+ Gulf Coast species with rarity and seasonal data</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-name">Offline Mode</div>
+          <div class="feature-desc">Full functionality with local sync and offline maps</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-name">Conditions</div>
+          <div class="feature-desc">Tides, weather, water temp, and NWS alerts</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-name">Community</div>
+          <div class="feature-desc">Public feed, hearts, comments, and nearby finds</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-name">Progression</div>
+          <div class="feature-desc">XP, badges, and collector tiers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-section">
+      <h2>Platforms</h2>
+      <div class="platform-row">
+        <div class="platform-badge active">
+          <span class="platform-dot"></span>
+          iOS — In Development
+        </div>
+        <div class="platform-badge active">
+          <span class="platform-dot"></span>
+          Android — In Development
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo">NPL</div>
+    <span class="footer-copy">&copy; 2026 NeoPrimLabs</span>
+  </footer>
+
+</body>
+</html>
