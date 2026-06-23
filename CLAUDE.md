@@ -12,7 +12,7 @@ NPLWeb is the static portfolio and landing page for NeoPrimLabs, hosted on GitHu
 
 - [index.html](index.html) — Main landing page with all CSS embedded inline. Sections in order: fixed nav, hero, services grid (3-column), apps showcase, contact, footer with social links.
 - [privacy.html](privacy.html) — Index listing all app privacy policies.
-- [privacy-app1.html](privacy-app1.html) — Ship Something privacy policy; use as template for additional apps.
+- [privacy-app1.html](privacy-app1.html) — init.concept privacy policy; use as template for additional apps.
 
 ### Design System
 
